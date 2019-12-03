@@ -1,0 +1,5 @@
+on right click on sign:
+    if line 1 of clicked block contain "[Essencard ":
+        if ESCToolIsAnyESC(event-player) = false:
+            if event-player is not sneaking:
+                message "&d[&bEssencard&d] &aGet your own Essencard by typing &d/ESC get&a."

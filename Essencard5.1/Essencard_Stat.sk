@@ -1,0 +1,54 @@
+on right click on sign:
+    if line 1 of clicked block is "[RailStatCheck]":
+        set line 1 of clicked block to "[Essencard Stat]"
+        
+    if line 1 of clicked block is "[Essencard Stat]":
+        cancel event
+        if ESCToolIsEssencard(event-player) = true:
+            if ESCToolIsOwnCard(event-player) = true:
+                if ESCPlayerLocked(event-player) = false:
+                    if ESCSignLocked(location of clicked block) = false:
+                        set {ESC.GateLocked.%event-player%} to true
+                        set {ESC.SignLocked::%location of clicked block%} to true
+                        
+                        play raw sound "random.orb" at player with pitch 1 volume 1
+                        
+                        set line 2 of clicked block to "&aLast fare:"
+                        set line 3 of clicked block to "&a%{ESC.Fare.%event-player%}%"
+                        set line 4 of clicked block to "&f1/4"
+                        
+                        wait 2 seconds
+                        
+                        set line 2 of clicked block to "&aLast Zone In:"
+                        set line 3 of clicked block to "&a%{ESC.PrevZoneIn.%event-player%}%"
+                        set line 4 of clicked block to "&f2/4"
+                        
+                        wait 2 seconds
+                        
+                        set line 2 of clicked block to "&aLast Zone Out:"
+                        set line 3 of clicked block to "&a%{ESC.PrevZoneOut.%event-player%}%"
+                        set line 4 of clicked block to "&f3/4"
+                        
+                        wait 2 seconds
+                        
+                        set line 2 of clicked block to "&aStaff Pass:"
+                        if ESCStaffPass(event-player) = true:
+                            set line 3 of clicked block to "&aYes"
+                        else:
+                            set line 3 of clicked block to "&cNo"
+                        set line 4 of clicked block to "&f4/4"
+                        
+                        wait 2 seconds
+                        
+                        set line 2 of clicked block to "&a&lMachine OK"
+                        set line 3 of clicked block to "&dPlease Tap"
+                        set line 4 of clicked block to "&dEssencard"
+                        delete {ESC.GateLocked.%event-player%}
+                        delete  {ESC.SignLocked::%location of clicked block%}
+                        
+                    else:
+                        message "&d[&bEssencard&d] &aThe machine did not finish its process, please wait."
+                else:
+                    message "&d[&bEssencard&d] &cYou are too fast to use the next machine, please wait."
+            else:
+                message "&d[&bEssencard&d] &cThis is not your own Essencard, return it to card owner or Station Assistant."

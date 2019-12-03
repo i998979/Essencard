@@ -1,0 +1,42 @@
+on right click on sign:
+    #Old Gate update
+    if line 1 of clicked block is "[Essencard Sta]":
+        set line 1 of clicked block to "[Essencard Stf]"
+        
+    #Main function
+    if line 1 of clicked block is "[Essencard Stf]":
+        cancel event
+        if ESCToolIsEssencard(event-player) = true:
+            if ESCToolIsOwnCard(event-player) = true:
+                if ESCPlayerLocked(event-player) = false:
+                    if ESCSignLocked(location of clicked block) = false:
+                        set {ESC.GateLocked.%event-player%} to true
+                        set {ESC.SignLocked::%location of clicked block%} to true
+                        
+                        if ESCStaffPass(event-player) = true:
+                            set line 2 of clicked block to "&aStaff Pass"
+                            set line 3 of clicked block to "&aGate opened"
+                            set line 4 of clicked block to "&aGo in"
+                            play raw sound "random.orb" at player with pitch 1 volume 1
+                            set block below clicked block to green wool
+                                    
+                        else:
+                            set line 2 of clicked block to "&cStaff only"
+                            set line 3 of clicked block to "&cNo permission"
+                            set line 4 of clicked block to "&cAccess denied"
+                            play raw sound "random.anvil_land" at player with pitch 1 volume 1
+                            
+                        wait 3 seconds
+                        set block below clicked block to redstone block
+                        set line 2 of clicked block to "&a&lGate Ready"
+                        set line 3 of clicked block to "&dPlease Tap"
+                        set line 4 of clicked block to "&dEssencard"
+                            
+                        delete {ESC.GateLocked.%event-player%}
+                        delete {ESC.SignLocked::%location of clicked block%}
+                    else:
+                        message "&d[&bEssencard&d] &aThe machine did not finish its process, please wait."
+                else:
+                    message "&d[&bEssencard&d] &cYou are too fast to use the next machine, please wait."
+            else:
+                message "&d[&bEssencard&d] &cThis is not your own Essencard, return it to card owner or Station Assistant."

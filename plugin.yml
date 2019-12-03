@@ -1,0 +1,12 @@
+main: to.epac.factorycraft.Essencard.Main
+version: 6.0
+name: Essencard
+author: i998979
+description: Ticket gates system. Designed for Mass transit railway servers
+depend: [Vault]
+api-version: 1.13
+
+commands:
+  essencard:
+    aliases: [esc, escs, essencards]
+    description: Main command

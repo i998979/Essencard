@@ -1,0 +1,38 @@
+on right click on sign:
+    if line 1 of clicked block is "[Essencard Out]":
+        cancel event
+        if ESCToolIsExitOnly(event-player) = true:
+            if ESCPlayerLocked(event-player) = false:
+                if ESCSignLocked(location of clicked block) = false:
+                    if ESCValidGate(location of clicked block) = true:
+                        set {ESC.SignLocked::%location of clicked block%} to true
+                        set {ESC.GateLocked.%event-player%} to true
+                        
+                        set line 3 of clicked block to "&cGate opened"
+                        set line 4 of clicked block to "&cCard received"
+                        remove 1 of event-player's tool from event-player
+                    
+                        set {ESC.ZoneOut.%event-player%} to line 2 of clicked block parsed as integer
+                        
+                        set {ESC.PrevZoneIn.%event-player%} to {ESC.ZoneIn.%event-player%}
+                        set {ESC.PrevZoneOut.%event-player%} to {ESC.ZoneOut.%event-player%}
+                        delete {ESC.ZoneIn.%event-player%}
+                        delete {ESC.ZoneOut.%event-player%}
+                            
+                        play raw sound "random.orb" at player with pitch 1 volume 1
+                        set block below clicked block to green wool
+                        
+                        wait 3 seconds
+                        set line 3 of clicked block to "&a&lGate Ready"
+                        set line 4 of clicked block to "&dTap ESCard"
+                        set block below event-block to redstone block
+                        delete {ESC.SignLocked::%location of clicked block%}
+                        delete {ESC.GateLocked.%event-player%}
+                    
+                    else:
+                        message "&d[&bEssencard&d] &cEssencard Gate error, please contact admin."
+                        message "&d[&bEssencard&d] &cLocation: %location of clicked block%"
+                else:
+                    message "&d[&bEssencard&d] &aThe machine did not finish its process, please wait."
+            else:
+                message "&d[&bEssencard&d] &cYou are too fast to use the next machine, please wait."

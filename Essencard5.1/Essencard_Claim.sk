@@ -1,0 +1,42 @@
+on right click on sign:
+    if line 1 of clicked block is "[Bank Cla]":
+        set line 1 of clicked block to "[Essencard Cla]"
+        
+    if line 1 of clicked block is "[Essencard Cla]":
+        cancel event
+        if ESCToolIsEssencard(event-player) = true:
+            if ESCToolIsOwnCard(event-player) = true:
+                if ESCPlayerLocked(event-player) = false:
+                    if ESCSignLocked(location of clicked block) = false:
+                        set {ESC.GateLocked.%event-player%} to true
+                        set {ESC.SignLocked::%location of clicked block%} to true
+                        
+                        if ESCClaimAvaliable(event-player) = false:
+                            play raw sound "random.anvil_land" at player with pitch 1 volume 1
+                            set line 2 of clicked block to "&cClaimed in"
+                            set line 3 of clicked block to "&c15mins ago"
+                            set line 4 of clicked block to "&cCome back later"
+                            
+                        else:
+                            set {ESC.Claim.Expired.%event-player%} to now
+                            add 15 minutes to {ESC.Claim.Expired.%event-player%}
+                            play raw sound "random.orb" at player with pitch 1 volume 1
+                            set {_ESC.RandomBal.%event-player%} to random integer between 1 and 15
+                            set line 2 of clicked block to "&aClaimed W%{_ESC.RandomBal.%event-player%}%"
+                            set line 3 of clicked block to "&aCome back"
+                            set line 4 of clicked block to "&a15mins later"
+                            add {_ESC.RandomBal.%event-player%} to balance of player
+                            
+                        wait 3 seconds
+                        set line 2 of clicked block to "&a&lMachine OK"
+                        set line 3 of clicked block to "&dPlease Tap"
+                        set line 4 of clicked block to "&dEssencard"
+                        
+                        delete {ESC.GateLocked.%event-player%}
+                        delete {ESC.SignLocked::%location of clicked block%}
+                    else:
+                        message "&d[&bEssencard&d] &aThe machine did not finish its process, please wait."
+                else:
+                    message "&d[&bEssencard&d] &cYou are too fast to use the next machine, please wait."
+            else:
+                message "&d[&bEssencard&d] &cThis is not your own Essencard, return it to card owner or Station Assistant."

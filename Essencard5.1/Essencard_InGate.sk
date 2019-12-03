@@ -1,0 +1,88 @@
+on right click on sign:
+    if line 1 of clicked block is "[Essencard In]":
+        cancel event
+        if ESCToolIsAnyESC(event-player) = true:
+            if ESCPlayerLocked(event-player) = false:
+                if ESCSignLocked(location of clicked block) = false:
+                    if ESCValidGate(location of clicked block) = true:
+                        set {ESC.SignLocked::%location of clicked block%} to true
+                        set {ESC.GateLocked.%event-player%} to true
+                        
+                        #----------------------------------------#
+                        #Essencard
+                        #----------------------------------------#
+                        if ESCToolIsEssencard(event-player) = true:
+                            if ESCToolIsOwnCard(event-player) = true:
+                                
+                                #----------------------------------------#
+                                #StaffPass                 
+                                #----------------------------------------#
+                                if ESCStaffPass(event-player) = true:
+                                    set {ESC.GatePassed.%event-player%} to true
+                                    
+                                    set {ESC.GateLocked.%event-player%} to true
+                                    set {ESC.SignLocked::%location of clicked block%} to true
+                                    set {ESC.ZoneIn.%event-player%} to -1
+                                    delete {ESC.ZoneOut.%event-player%}
+                                    
+                                    set line 3 of clicked block to "&aStaff Pass"
+                                    set line 4 of clicked block to "&aGate opened"
+                                #----------------------------------------#
+                                #Non-StaffPass                    
+                                #----------------------------------------#           
+                                else:
+                                    if {ESC.ZoneIn.%event-player%} is not set:
+                                        set {ESC.GatePassed.%event-player%} to true
+                                        
+                                        set {ESC.ZoneIn.%event-player%} to line 2 of clicked block parsed as integer
+                                        set line 3 of clicked block to "&aBal."
+                                        set line 4 of clicked block to "&a%balance of event-player%"
+                                    else:
+                                        message "&d[&bEssencard&d] &cYou have already entered the station, if you think this is an error, contact &bStation Assistant &cfor help."
+                                
+                            else:
+                                message "&d[&bEssencard&d] &cThis is not your own Essencard, return it to card owner or Station Assistant."
+                            
+                        #----------------------------------------#
+                        #One-Way Ticket
+                        #----------------------------------------#
+                        else if ESCToolIsOneWay(event-player) = true:
+                            if "%lore of event-player's tool%" contain "&aZone In: %line 2 of clicked block%":
+                                set {ESC.GatePassed.%event-player%} to true
+                                
+                                set line 3 of clicked block to "&eTicket accepted"
+                                set line 4 of clicked block to "&eGo in"
+                                
+                            else:
+                                set line 3 of clicked block to "&cInvalid Zone"
+                                set line 4 of clicked block to "&cAccess denied"
+                                play raw sound "random.anvil_land" at player with pitch 1 volume 1
+                        
+                        #----------------------------------------#
+                        #Gate Passed
+                        #----------------------------------------#
+                        if ESCGatePassed(event-player) = true:
+                            delete {ESC.GatePassed.%event-player%}
+                            
+                            delete {ESC.ZoneOut.%event-player%}
+                            
+                            set block below event-block to green wool
+                            play raw sound "random.orb" at player with pitch 1 volume 1
+                        
+                        #----------------------------------------#
+                        #Initialization               
+                        #----------------------------------------#    
+                        wait 3 seconds
+                        set line 3 of clicked block to "&a&lGate Ready"
+                        set line 4 of clicked block to "&dTap ESCard"
+                        set block below clicked block to redstone block
+                        delete {ESC.SignLocked::%location of clicked block%}
+                        delete {ESC.GateLocked.%event-player%}
+                        
+                    else:
+                        message "&d[&bEssencard&d] &cEssencard Gate error, please contact admin."
+                        message "&d[&bEssencard&d] &cLocation: %location of clicked block%"
+                else:
+                    message "&d[&bEssencard&d] &aThe machine did not finish its process, please wait."
+            else:
+                message "&d[&bEssencard&d] &cYou are too fast to use the next machine, please wait."

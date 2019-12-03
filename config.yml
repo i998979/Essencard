@@ -1,0 +1,9 @@
+Prefix: '&9[&bEssencard&9] &r'
+NextID: 10001
+StandardFare: 3.0
+ClaimCD: 900
+ClaimMin: 1.0
+ClaimMax: 100.0
+Delay: 60
+StatsDelay: 60
+Players: {}

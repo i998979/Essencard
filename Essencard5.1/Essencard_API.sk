@@ -1,0 +1,119 @@
+function ESCStaffPass(Player: player) :: boolean:
+    if {ESC.StaffPass::*} is set:
+        loop {ESC.StaffPass::*}:
+            if "%loop-value%" = "%{_Player}%":
+                return true
+        return false
+    else:
+        return false
+        
+function ESCFixPermitted(Player: player) :: boolean:
+    if {ESC.Permitted.%{_Player}%} is set:
+        return true
+    else:
+        return false
+
+function ESCClaimAvaliable(Player: player) :: boolean:
+    if {ESC.Claim.Expired.%{_Player}%} is set:
+        if {ESC.Claim.Expired.%{_Player}%} <= now:
+            return true
+        else:
+            return false
+    else:
+        return true
+        
+function ESCPlayerCardNum(Player: player) :: number:
+    if {ESC.CardNum::*} is set:
+        loop {ESC.CardNum::*}:
+            if "%loop-value%" = "%{_Player}%":
+                set {_n} to loop-index parsed as number
+                return (10000 + {_n} - 1)
+    else:
+        return 10000
+        
+function ESCOwnACard(Player: player) :: boolean:
+    if {ESC.CardNum::*} is set:
+        loop {ESC.CardNum::*}:
+            if "%loop-value%" = "%{_Player}%":
+                return true
+        return false
+    else:
+        return false
+        
+function ESCNextCardNum(Empty: boolean) :: number:
+    if {ESC.CardNum::*} is set:
+        set {_n} to 10000
+        loop {ESC.CardNum::*}:
+            add 1 to {_n}
+        return {_n}
+    else:
+        return 10000
+        
+function ESCSignLocked(Loc: location) :: boolean:
+    if {ESC.SignLocked::*} is set:
+        loop {ESC.SignLocked::*}:
+            if {ESC.SignLocked::%{_Loc}%} is set:
+                return true
+        return false
+    else:
+        return false
+        
+function ESCPlayerLocked(Player: player) :: boolean:
+    if {ESC.GateLocked.%{_Player}%} is set:
+        return true
+    else:
+        return false
+        
+function ESCGatePassed(Player: player) :: boolean:
+    if {ESC.GatePassed.%{_Player}%} is set:
+        return true
+    else:
+        return false        
+        
+function ESCToolIsEssencard(Player: player) :: boolean:
+    if {_Player}'s tool is a name tag of unbreaking 5:
+        if name of {_Player}'s tool contain "&aESC &8|":
+            return true
+        else:
+            return false
+    else:
+        return false
+        
+function ESCToolIsOneWay(Player: player) :: boolean:
+    if {_Player}'s tool is a item frame of unbreaking 5:
+        if name of {_Player}'s tool contain "&aESC &8|":
+            return true
+        else:
+            return false
+    else:
+        return false        
+        
+function ESCToolIsExitOnly(Player: player) :: boolean:
+    if {_Player}'s tool is a painting of unbreaking 5:
+        if name of {_Player}'s tool contain "&aESC &8|":
+            return true
+        else:
+            return false
+    else:
+        return false     
+        
+function ESCToolIsAnyESC(Player: player) :: boolean:
+    if {_Player}'s tool is a name tag of unbreaking 5 or a item frame of unbreaking 5 or a painting of unbreaking 5:
+        if name of {_Player}'s tool contain "&aESC &8|":
+            return true
+        else:
+            return false
+    else:
+        return false
+        
+function ESCToolIsOwnCard(Player: player) :: boolean:
+    if name of {_Player}'s tool contain "%{_Player}%":
+        return true
+    else:
+        return false
+        
+function ESCValidGate(Loc: location) :: boolean:
+    if line 2 of block at {_Loc} is set:
+        return true
+    else:
+        return false

@@ -1,0 +1,98 @@
+command /esc [<text="help">] [<text>] [<text>] [<text>]:
+    trigger:
+        if arg-1 is "help":
+            message "&a---------------&d[&bEssencard&d]&a---------------"
+            message "&6Version: 5.1"
+            message "&bAuthor: i998979 | original author: MinecraftSBC"
+            message "&aCommands:"
+            message "&e/esc get: Get a new Essencard with id"
+            message "&e/esc claimcheck: Show the previous claim time, the time before next claim"
+            message ""
+            message "&cAdmin Commands:"
+            message "&e/esc get ticket [zone] [zone]: Get a One-Way Ticket with specified zone"
+            message "&e/esc get exitonly: Get a Exit-Only ticket"
+            message ""
+            message "&a/esc staffpass [player]: Add or remove a player to Staff Pass list"
+            message "&a---------------&d[&bEssencard&d]&a---------------"
+            
+        if arg-1 is "claimcheck":
+            message "&d[&bEssencard&d] &aNext claimed: %{ESC.Claim.Expired.%event-player%}%"
+            message "&d[&bEssencard&d] &aTimes Left: %difference between now and {ESC.Claim.Expired.%event-player%}%"
+            if  ESCClaimAvaliable(event-player) = true:
+                message "&d[&bEssencard&d] &eClaim avaliable now: &aTrue"
+            else:
+                message "&d[&bEssencard&d] &eClaim avaliable now: &cFalse"
+        if arg-1 is "fix":
+            if {ESC.Permitted.%event-player%} is set:
+                delete {ESC.Permitted.%event-player%}
+                delete {ESC.GateLocked.%event-player%}
+                delete {ESC.GatePassed.%event-player%}
+                delete {ESC.ZoneIn.%event-player%}
+                delete {ESC.ZoneOut.%event-player%}
+                message "&d[&bEssencard&d] &eYour Essencard database has been fixed. We apologize for any inconvenience caused."
+        if arg-1 is "fixpermit":
+            if arg-2 is set:
+                if {ESC.Permitted.%arg-2%} is not set:
+                    set {ESC.Permitted.%arg-2%} to true
+                    message "&d[&bEssencard&d] &eYou permitted &a%arg-2% &eto execute &d/esc fix &ecommand."
+                else:
+                    delete {ESC.Permitted.%arg-2%}
+                    message "&d[&bEssencard&d] &eYou no longer permit &a%arg-2% &eto execute &d/esc fix &ecommand."
+        if arg-1 is "get":
+            if executor is player:
+                if arg-2 is not set:
+                    if ESCOwnACard(event-player) = true:
+                        set {_ESC.CardNum} to ESCPlayerCardNum(event-player)
+                        give event-player a name tag of unbreaking 5 named "&aESC &8| &3%{_ESC.CardNum}% &8| &6%name of event-player%"
+                        message "&d[&bEssencard&d] &aYou received a new Essencard, do not lost it again."
+                    else:
+                        set {_ESC.CardNum} to ESCNextCardNum(true)
+                        give event-player a name tag of unbreaking 5 named "&aESC &8| &3%{_ESC.CardNum}% &8| &6%name of event-player%"
+                        add event-player to {ESC.CardNum::*}
+                        message "&d[&bEssencard&d] &aYou received a new Essencard, do not lost it."
+                        
+                if arg-2 is "ticket":
+                    if event-player has permission "ESC.admin":
+                        if arg-3 is set:
+                            if arg-4 is set:
+                                give event-player a item frame of unbreaking 5 named "&aESC &8| &9One-Way Ticket" with lore "&aZone In: %arg-3%||&aZone Out: %arg-4%"
+                    else:
+                        message "&cYou don't have permission to perform this command."
+                        
+                if arg-2 is "exitonly":
+                    if event-player has permission "ESC.admin":
+                        give event-player a painting of unbreaking 5 named "&aESC &8| Exit Only Ticket"
+                    else:
+                        message "&cYou don't have permission to perform this command."
+            else:
+                message "&d[&bEssencard&d] &cYou must be player to execute this command."
+        
+        if arg-1 is "staffpass":
+            if event-player has permission "ESC.admin":
+            
+                if arg-2 is "list":
+                    message "&d[&bEssencard&d] &6StaffPass List:"
+                    message "&e%{ESC.StaffPass::*}%"
+                    
+                else if arg-2 is set:
+                    if ESCStaffPass((arg-2 parsed as player)) = true:
+                        remove arg-2 from {ESC.StaffPass::*}
+                        message "&d[&bEssencard&d] &aPlayer &6%arg-2% &aStaff Pass has been removed."
+                    else:
+                        add arg-2 to {ESC.StaffPass::*}
+                        message "&d[&bEssencard&d] &aPlayer &6%arg-2% &aStaff Pass has been added."
+                else:
+                    message "&d[&bEssencard&d] &ePlease enter a player name."
+            else:
+                message "&cYou don't have permission to perform this command."
+            
+        if arg-1 is "standardfare":
+            if event-player has permission "ESC.admin":
+                if arg-2 parsed as number is set:
+                    set {ESC.StandardFare} to arg-2
+                    message "&d[&bEssencard&d] &aStandard fare has set to %arg-2%"
+                else:
+                    message "&d[&bEssencard&d] &cPlease enter a integer."
+            else:
+                message "&cYou don't have permission to perform this command."
+                

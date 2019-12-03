@@ -1,0 +1,13 @@
+on join:
+    delete {ESC.GateLocked.%event-player%}
+    delete {ESC.GatePassed.%event-player%}
+    delete {ESC.SignLocked::*}
+on quit:
+    delete {ESC.GateLocked.%event-player%}
+    delete {ESC.GatePassed.%event-player%}
+    delete {ESC.SignLocked::*}
+on command "/esc-reset":
+    cancel event
+    delete {ESC.GateLocked.%event-player%}
+    delete {ESC.GatePassed.%event-player%}
+    delete {ESC.SignLocked::*}

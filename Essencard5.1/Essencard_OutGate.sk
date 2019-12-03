@@ -1,0 +1,104 @@
+on right click on sign:
+    if line 1 of clicked block is "[Essencard Out]":
+        cancel event
+        if ESCToolIsAnyESC(event-player) = true:
+            if ESCPlayerLocked(event-player) = false:
+                if ESCSignLocked(location of clicked block) = false:
+                    if ESCValidGate(location of clicked block) = true:
+                        set {ESC.SignLocked::%location of clicked block%} to true
+                        set {ESC.GateLocked.%event-player%} to true
+                        
+                        #----------------------------------------#
+                        #Essencard
+                        #----------------------------------------#
+                        if ESCToolIsEssencard(event-player) = true:
+                            if ESCToolIsOwnCard(event-player) = true:
+                                #----------------------------------------#
+                                #StaffPass                 
+                                #----------------------------------------#       
+                                if ESCStaffPass(event-player) = true:
+                                    set {ESC.GatePassed.%event-player%} to true
+                                    
+                                    set {ESC.PrevZoneOut.%event-player%} to -1
+                                    delete {ESC.ZoneOut.%event-player%}
+                                    set line 3 of clicked block to "&aStaff Pass"
+                                    set line 4 of clicked block to "&aGate opened"
+                                #----------------------------------------#
+                                #Non-StaffPass                    
+                                #----------------------------------------#          
+                                else:
+                                    if {ESC.ZoneIn.%event-player%} is set:
+                                        set {ESC.ZoneOut.%event-player%} to line 2 of clicked block parsed as integer
+                                        set {ESC.Fare.%event-player%} to ({ESC.ZoneIn.%event-player%} - {ESC.ZoneOut.%event-player%}) * {ESC.StandardFare} parsed as number
+                                    
+                                        if {ESC.Fare.%event-player%} < 0:
+                                            set {ESC.Fare.%event-player%} to {ESC.Fare.%event-player%} * -1
+                                        #Same zone In-Out
+                                        if {ESC.Fare.%event-player%} = 0:
+                                            set {ESC.Fare.%event-player%} to {ESC.StandardFare} parsed as number
+                                            
+                                        if balance of event-player >=  {ESC.Fare.%event-player%}:
+                                            set {ESC.GatePassed.%event-player%} to true
+                                            
+                                            remove {ESC.Fare.%event-player%} from balance of event-player
+                                            set line 3 of clicked block to "&bFare &0| &aBal."
+                                            set line 4 of clicked block to "&b%{ESC.Fare.%event-player%}%&0|&a%balance of event-player%"
+                                            
+                                            set {ESC.PrevZoneIn.%event-player%} to {ESC.ZoneIn.%event-player%}
+                                            set {ESC.PrevZoneOut.%event-player%} to {ESC.ZoneOut.%event-player%}
+                                            delete {ESC.ZoneIn.%event-player%}
+                                            delete {ESC.ZoneOut.%event-player%}
+                                            
+                                        else:
+                                            set line 3 of clicked block to "&cinsufficient"
+                                            set line 4 of clicked block to "&cBalance"
+                                            play raw sound "random.anvil_land" at player with pitch 1 volume 1
+                                    else:
+                                        message "&d[&bEssencard&d] &cYou have already exited station, if you think this is an error. contact &bStation Assistant &cfor help."                                   
+                            else:
+                                message "&d[&bEssencard&d] &cThis is not your own Essencard, return it to card owner or Station Assistant."
+                            
+                        #----------------------------------------#
+                        #One-Way Ticket
+                        #----------------------------------------#
+                        else if ESCToolIsOneWay(event-player) = true:
+                            if "%lore of event-player's tool%" contain "&aZone Out: %line 2 of clicked block%":
+                                set {ESC.GatePassed.%event-player%} to true
+                                remove event-player's tool from event-player
+                                
+                                set line 3 of clicked block to "&eThanks for"
+                                set line 4 of clicked block to "&eRiding UniRails"
+                            else:
+                                set line 3 of clicked block to "&cInvalid Zone"
+                                set line 4 of clicked block to "&cAccess denied"
+                                play raw sound "random.anvil_land" at player with pitch 1 volume 1
+                                
+                        #----------------------------------------#
+                        #Gate Passed
+                        #----------------------------------------#
+                        if ESCGatePassed(event-player) = true:
+                            delete {ESC.GatePassed.%event-player%}
+                            delete {ESC.ZoneIn.%event-player%}
+                            delete {ESC.ZoneOut.%event-player%}
+                                
+                            set block below clicked block to green wool
+                            play raw sound "random.orb" at player with pitch 1 volume 1
+                            
+                        
+                        #----------------------------------------#
+                        #Initialization               
+                        #----------------------------------------#    
+                        wait 3 seconds
+                        set line 3 of clicked block to "&a&lGate Ready"
+                        set line 4 of clicked block to "&dTap ESCard"
+                        set block below clicked block to redstone block
+                        delete {ESC.SignLocked::%location of clicked block%}
+                        delete {ESC.GateLocked.%event-player%}
+                            
+                    else:
+                        message "&d[&bEssencard&d] &cEssencard Gate error, please contact admin."
+                        message "&d[&bEssencard&d] &cLocation: %location of clicked block%"
+                else:
+                    message "&d[&bEssencard&d] &cYou are too fast to use the next machine, please wait."
+            else:
+                message "&d[&bEssencard&d] &aThe machine did not finish its process, please wait."
