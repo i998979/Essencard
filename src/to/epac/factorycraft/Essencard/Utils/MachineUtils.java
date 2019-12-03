@@ -3,10 +3,14 @@ package to.epac.factorycraft.Essencard.Utils;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
+import org.bukkit.material.Wool;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 
@@ -63,7 +67,12 @@ public class MachineUtils {
 	}
 	
 	public static void openGate(Sign gate) {
-		getControllerLocation(gate).getBlock().setType(Material.GREEN_WOOL);
+		Block block = getControllerLocation(gate).getBlock();
+		
+		block.setType(Material.WOOL);
+		BlockState state = block.getState();
+		state.setData(new Wool(DyeColor.GREEN));
+		state.update();
 	}
 	
 	public static void closeGate(Sign gate) {
